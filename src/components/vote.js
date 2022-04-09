@@ -42,7 +42,8 @@ export class Vote extends React.Component {
   }
 
   async finalize() {
-    let newDoc = contract.finalizeVote(this.id);
+    let newDoc = await contract.finalizeVoting(this.id);
+    console.log('new doc', newDoc);
     window.location.href = `/doc/${newDoc}`
   }
 

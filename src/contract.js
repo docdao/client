@@ -1,4 +1,4 @@
-import { Contract, providers, utils } from 'ethers';
+import { Contract, providers, utils, BigNumber } from 'ethers';
 const provider = new providers.Web3Provider(window.ethereum)
 let contract;
 let abi = [
@@ -18,7 +18,7 @@ let done = false;
 async function init() {
   await provider.send("eth_requestAccounts", []);
   const signer = provider.getSigner()
-  contract = new Contract('0xCD685D211a4882DFB277EAa4Bb52299043Fb9c46', abi, signer);
+  contract = new Contract('0x355a2cB0C08771feb89D2204174B0a10210c5dB2', abi, signer);
   done = true;
 }
 
@@ -81,10 +81,19 @@ export async function votes(id) {
   return (await contract.votes(id)).toString();
 }
 
-export async function finalizeVote({ doc_id } = {}) {
-  // let voteResult = contract.finalizeVote(doc_id);
-  // in theory the new doc
-  return 10;
+export async function finalizeVoting(id) {
+  let tx = await contract.finalizeVoting(id);
+  const rc = await tx.wait();
+
+  let h = rc.events[0].data;
+  console.log(rc.events[0]);
+  console.log(h);
+  let a = BigNumber.from(rc.events[0].data.slice(-10));
+  console.log()
+  console.log('a');
+  console.log(a);
+
+  return a.toString()
 }
 
 async function checkReady() {
