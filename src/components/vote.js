@@ -14,6 +14,7 @@ export class Vote extends React.Component {
     let path = window.location.pathname;
     let id = path.split('/')[2];
     this.id = id;
+    this.winner = 0;
   }
 
   async componentDidMount() {
@@ -25,9 +26,11 @@ export class Vote extends React.Component {
       votes.push(v);
       if (maxVote < parseInt(v)) {
         maxVote = parseInt(v);
+        this.winner = edits[i];
       }
     }
 
+    console.log('winner', this.winner);
     let threshold = await contract.threshold(this.id);
     this.setState({
       edit_ids: edits,
@@ -42,9 +45,8 @@ export class Vote extends React.Component {
   }
 
   async finalize() {
-    let newDoc = await contract.finalizeVoting(this.id);
-    console.log('new doc', newDoc);
-    window.location.href = `/doc/${newDoc}`
+    await contract.finalizeVoting(this.id);
+    window.location.href = `/doc/${this.winner}`
   }
 
   render() {
@@ -52,12 +54,14 @@ export class Vote extends React.Component {
       edits
       {this.state.edit_ids.map((id, i) => {
         return <div key={i}>
-          <p>{JSON.stringify(id)}</p>
+          <p>Edit Id: #{id}</p>
           <DocView id={id} />
           <div>votes: {this.state.votes[i]}</div>
-          <button onClick={() => this.vote(id)}>vote</button>
+          <button onClick={() => this.vote(id)}>vote</button><br />
+          {(i !== this.state.edit_ids.length-1) ? <hr style={{ borderTop: '3px dashed #bbb' }} /> : null }
         </div>
-      })}
+      })}<br />
+      <hr />
       <div>threshold: {this.state.threshold}</div>
       {(this.state.maxVote >= this.state.threshold) ? <button onClick={() => this.finalize()}>finalize</button> : undefined}
     </div>;

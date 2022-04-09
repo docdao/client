@@ -21,9 +21,10 @@ export class Doc extends React.Component {
 
   // change state to be proposing
   async edit() {
-    console.log('mint edit');
     let hash = store.storeDoc(this.state.content);
     await contract.mintEdit({ hash, parent: this.id })
+
+
     window.location.href = `/vote/${this.id}`
   }
 

@@ -84,15 +84,8 @@ export async function votes(id) {
 export async function finalizeVoting(id) {
   let tx = await contract.finalizeVoting(id);
   const rc = await tx.wait();
-
   let h = rc.events[0].data;
-  console.log(rc.events[0]);
-  console.log(h);
   let a = BigNumber.from(rc.events[0].data.slice(-10));
-  console.log()
-  console.log('a');
-  console.log(a);
-
   return a.toString()
 }
 
